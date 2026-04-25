@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VW ID.3 Dashboard</title>
+    <!-- Modern Typography: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="header-content">
+          <h1><i class="fa-solid fa-car-side"></i> <span id="vehicle-title">ID.3 Dashboard</span></h1>
+          <div class="header-actions">
+            <div class="status-indicator">
+              <span id="sync-status" class="status-dot"></span>
+              <span id="sync-text">Connecting...</span>
+            </div>
+            <button id="refresh-btn" class="icon-btn" title="Opdater manuelt"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="open-alarm-btn" class="icon-btn" title="Opladningsalarm"><i class="fa-solid fa-bell"></i></button>
+            <button id="open-settings-btn" class="icon-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
+          </div>
+        </div>
+      </header>
+      
+      <main class="dashboard-grid">
+        <!-- Battery Card -->
+        <div class="card battery-card glass">
+          <div class="card-header">
+            <h2><i class="fa-solid fa-bolt"></i> EV Battery System</h2>
+          </div>
+          <div class="card-body">
+            <div class="main-stat">
+              <span class="value" id="battery-level">--</span><span class="unit">%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" id="battery-progress" style="width: 0%"></div>
+            </div>
+            
+            <div class="detailed-stats-grid">
+              <div class="grid-item">
+                <span class="label">Est. Range</span>
+                <span class="val highlight" id="range-km">-- km</span>
+              </div>
+              <div class="grid-item">
+                <span class="label">Batt. Temp</span>
+                <span class="val" id="batt-temp">-- °C</span>
+              </div>
+              <div class="grid-item">
+                <span class="label">Charge Pwr</span>
+                <span class="val" id="charge-power">-- kW</span>
+              </div>
+              <div class="grid-item">
+                <span class="label">Est. Time</span>
+                <span class="val" id="time-left">-- min</span>
+              </div>
+              <div class="grid-item">
+                <span class="label">Lademål</span>
+                <span class="val highlight" id="charge-target">-- %</span>
+              </div>
+              <div class="grid-item">
+                <span class="label">Færdig (ETA)</span>
+                <span class="val" id="charge-eta">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Climate Card -->
+        <div class="card climate-card glass">
+          <div class="card-header">
+            <h2><i class="fa-solid fa-snowflake"></i> Climate Control</h2>
+            <button id="toggle-climate-btn" class="icon-btn" title="Toggle Climate"><i class="fa-solid fa-power-off"></i></button>
+          </div>
+          <div class="card-body">
+            <div class="main-stat temperature">
+              <span class="value" id="target-temp">--</span><span class="unit">°C</span>
+            </div>
+            <div class="stat-details space-around">
+              <div>
+                <span class="label">Outdoor Temp</span>
+                <span class="val" id="outdoor-temp">-- °C</span>
+              </div>
+              <div>
+                <span class="status-badge" id="climate-state-badge">Status: Unknown</span>
+              </div>
+            </div>
+            
+            <div class="stat-details space-around" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+              <div>
+                <span class="label">Rude (For)</span>
+                <span class="val" id="window-heat-front">--</span>
+              </div>
+              <div>
+                <span class="label">Rude (Bag)</span>
+                <span class="val" id="window-heat-rear">--</span>
+              </div>
+              <div>
+                <span class="label">Klima ETA</span>
+                <span class="val" id="climate-eta">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicle Security & Info -->
+        <div class="card vehicle-card glass">
+          <div class="card-header">
+            <h2><i class="fa-solid fa-shield-halved"></i> Vehicle Status</h2>
+          </div>
+          <div class="card-body expanded-body">
+            <div class="stat-list">
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-lock"></i> Doors</span>
+                <span class="val" id="doors-locked">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-border-all"></i> Windows</span>
+                <span class="val" id="windows-closed">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-truck-ramp-box"></i> Trunk</span>
+                <span class="val" id="trunk-closed">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-regular fa-lightbulb"></i> Light (Left)</span>
+                <span class="val" id="lights-left-on">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-regular fa-lightbulb"></i> Light (Right)</span>
+                <span class="val" id="lights-right-on">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-gauge-high"></i> Odometer</span>
+                <span class="val" id="odometer">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-wrench"></i> Næste Service</span>
+                <span class="val" id="service-due">--</span>
+              </div>
+              <div class="stat-row">
+                <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
+                <a href="#" class="val location-link" id="parking-location" target="_blank">View Map</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card history-card glass" style="grid-column: 1 / -1;">
+          <div class="card-header">
+            <h2><i class="fa-solid fa-chart-area"></i> Temperatur Historik</h2>
+            <div class="history-controls">
+              <button class="history-btn" data-days="1">24 Timer</button>
+              <button class="history-btn active" data-days="5">5 Dage</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="tempChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Trips Card -->
+        <div class="card trips-card glass" style="grid-column: 1 / -1;">
+          <div class="card-header">
+            <h2><i class="fa-solid fa-route"></i> Kørte Ture</h2>
+          </div>
+          <div class="card-body">
+            <div class="trips-container">
+              <table class="trips-table">
+                <thead>
+                  <tr>
+                    <th>Tidspunkt</th>
+                    <th>Distance</th>
+                    <th>Batteri Brugt</th>
+                  </tr>
+                </thead>
+                <tbody id="trips-body">
+                  <tr><td colspan="3" style="text-align: center; color: var(--text-secondary);">Indlæser ture...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <p>Last updated: <span id="last-updated">Never</span></p>
+      </footer>
+
+      <!-- Settings Modal -->
+      <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-content glass">
+          <div class="modal-header">
+            <h2><i class="fa-solid fa-key"></i> Volkswagen Login</h2>
+            <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="modal-body">
+            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+              Gem din WeConnect/VW email og adgangskode. Dashboardet vil forsøge at koble til Volkswagens server og udskifte demo-data med live-data direkte.
+            </p>
+            <div class="form-group">
+              <label for="vw-username">E-mail</label>
+              <input type="text" id="vw-username" placeholder="din@email.dk" />
+            </div>
+            <div class="form-group">
+              <label for="vw-password">Adgangskode</label>
+              <input type="password" id="vw-password" placeholder="••••••••" />
+            </div>
+            <div id="auth-result" class="auth-result hidden"></div>
+            <button id="save-credentials-btn" class="primary-btn">Gem og Tilslut <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- Alarm Settings Modal -->
+      <div id="alarm-settings-modal" class="modal-overlay hidden">
+        <div class="modal-content glass">
+          <div class="modal-header">
+            <h2><i class="fa-solid fa-bell"></i> Opladningsalarm</h2>
+            <button id="close-alarm-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="modal-body">
+            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+              Få en besked via telefon eller e-mail, hvis du har glemt at sætte bilen til strøm på de valgte dage.
+            </p>
+            
+            <div class="form-group alarm-active-group">
+              <label for="alarm-active" style="margin: 0;">Aktivér alarm</label>
+              <input type="checkbox" id="alarm-active" />
+            </div>
+
+            <div class="form-group">
+              <label for="alarm-time">Tidspunkt</label>
+              <input type="time" id="alarm-time" value="22:00" />
+            </div>
+
+            <div class="form-group">
+              <label>Dage</label>
+              <div class="days-grid">
+                <label><input type="checkbox" class="day-cb" value="0"> Man</label>
+                <label><input type="checkbox" class="day-cb" value="1"> Tir</label>
+                <label><input type="checkbox" class="day-cb" value="2"> Ons</label>
+                <label><input type="checkbox" class="day-cb" value="3"> Tor</label>
+                <label><input type="checkbox" class="day-cb" value="4"> Fre</label>
+                <label><input type="checkbox" class="day-cb" value="5"> Lør</label>
+                <label><input type="checkbox" class="day-cb" value="6"> Søn</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="alarm-ntfy">Ntfy Emne (Pushbesked til telefon)</label>
+              <input type="text" id="alarm-ntfy" placeholder="f.eks. min-id3-alarm" />
+              <small style="color: var(--text-secondary); margin-top: 4px; display: block;">Installer <a href="https://ntfy.sh" target="_blank" style="color: #3b82f6;">Ntfy appen</a> og abonnér på dette emne for at få gratis pushbeskeder.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="alarm-email">E-mail (Valgfri)</label>
+              <input type="email" id="alarm-email" placeholder="din@email.dk" />
+            </div>
+
+            <div id="alarm-auth-result" class="auth-result hidden"></div>
+            <button id="save-alarm-btn" class="primary-btn">Gem Alarm <i class="fa-solid fa-floppy-disk"></i></button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
