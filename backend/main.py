@@ -65,7 +65,7 @@ class Credentials(BaseModel):
 @app.post("/api/settings/credentials")
 def save_credentials(creds: Credentials):
     global cc, cc_error
-    env_path = '/Users/akr/.gemini/antigravity/scratch/vw-id3-dashboard/backend/.env'
+    env_path = '.env'
     with open(env_path, 'w') as f:
         f.write(f'VW_USERNAME={creds.username}\n')
         f.write(f'VW_PASSWORD={creds.password}\n')
@@ -437,9 +437,9 @@ def check_charge_alarm():
     db.close()
 
 
-# Start APScheduler (Slået fra efter brugers ønske for at undgå at spørge bilen hele tiden)
+# Start APScheduler (Kører hver 10. minut for at samle historik)
 scheduler = BackgroundScheduler()
-# scheduler.add_job(background_data_fetch, IntervalTrigger(minutes=5))
+scheduler.add_job(background_data_fetch, IntervalTrigger(minutes=10))
 scheduler.add_job(check_charge_alarm, IntervalTrigger(minutes=1))
 scheduler.start()
 

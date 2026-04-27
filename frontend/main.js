@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8000/api/vehicle/status';
+const API_BASE = 'http://' + window.location.hostname + ':8000';
+const API_URL = `${API_BASE}/api/vehicle/status`;
 
 // DOM Elements
 const syncDot = document.getElementById('sync-status');
@@ -252,7 +253,7 @@ saveCredsBtn.addEventListener('click', async () => {
   authResult.classList.add('hidden');
   
   try {
-    const res = await fetch('http://localhost:8000/api/settings/credentials', {
+    const res = await fetch(`${API_BASE}/api/settings/credentials`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: user, password: pass })
@@ -296,7 +297,7 @@ openAlarmBtn.addEventListener('click', async () => {
   
   try {
     saveAlarmBtn.disabled = true;
-    const res = await fetch('http://localhost:8000/api/settings/alarm');
+    const res = await fetch(`${API_BASE}/api/settings/alarm`);
     const json = await res.json();
     if(json.status === 'success') {
        document.getElementById('alarm-active').checked = json.data.is_active;
@@ -333,7 +334,7 @@ saveAlarmBtn.addEventListener('click', async () => {
     saveAlarmBtn.disabled = true;
     saveAlarmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gemmer...';
     try {
-        const res = await fetch('http://localhost:8000/api/settings/alarm', {
+        const res = await fetch(`${API_BASE}/api/settings/alarm`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -370,7 +371,7 @@ let tempChartInstance = null;
 
 async function fetchHistory(days = 5) {
   try {
-    const res = await fetch(`http://localhost:8000/api/history/battery-temp?days=${days}`);
+    const res = await fetch(`${API_BASE}/api/history/battery-temp?days=${days}`);
     const json = await res.json();
     if(json.status === 'success') {
       renderChart(json.data);
@@ -447,7 +448,7 @@ historyBtns.forEach(btn => {
 // ---------------------------
 async function fetchTrips() {
   try {
-    const res = await fetch(`http://localhost:8000/api/history/trips`);
+    const res = await fetch(`${API_BASE}/api/history/trips`);
     const json = await res.json();
     if(json.status === 'success') {
       const tbody = document.getElementById('trips-body');
