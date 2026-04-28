@@ -16,3 +16,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token eyJhIjoiYmFmMDAyZDJkODUzYmNjOThkMTUyMWU2ZmZiMjY5YmMiLCJ0IjoiYTZmNjU5YzAtZmY0Ny00MTIyLTkwMmItMTE1YzNhNmY2NzljIiwicyI6Ik1XSmlZVFppTldJdE1EQmhNeTAwWVdJd0xXRTJPVGt0T0Rka09EQTVZamsxWVRVeCJ9
+    restart: unless-stopped

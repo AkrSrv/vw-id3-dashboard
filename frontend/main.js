@@ -1,4 +1,4 @@
-const API_BASE = 'http://' + window.location.hostname + ':8000';
+const API_BASE = '';
 const API_URL = `${API_BASE}/api/vehicle/status`;
 
 // DOM Elements
